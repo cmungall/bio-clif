@@ -164,7 +164,15 @@
 	    (if (instance_of bone1 fma:bone t1)
 		(instance_of bone1 bfo:material_entity t1)))
 
-// 
+// if a bone exists and that bone has a mass that is an instance
+// of "1_kg" and has a volume that is an instance of "1_m^3", then
+// it has a density of "1_kg_per_m^3". (yeh, ok, this is a pretty odd bone).
+// OK, so this is as far as we go for now.
+// Not that impressive yet as we obviously want to deal with all those
+// entities that don't happen to instantiate 1_kg exactly...
+// We could do more with
+// some crazy Peano-axioms but it may be easier to just use FOL enhanced
+// with some basic arithmetic axioms...
 (cl-comment "test-4" 
 	    (if (and (instance_of bone1 fma:bone t1)
 		     (inheres_in bone1mass bone1 t1)
