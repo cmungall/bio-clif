@@ -101,14 +101,14 @@
 
 // every material entity has mass
 (forall (i t)
-	(if (instance_of i material_entity t)
+	(if (instance_of i bfo:material_entity t)
 	    (exists (q)
 		    (and (instance_of q mass t)
 			 (inheres_in q i t)))))
 
 // every material entity has volume
 (forall (i t)
-	(if (instance_of i material_entity t)
+	(if (instance_of i bfo:material_entity t)
 	    (exists (q)
 		    (and (instance_of q volume t)
 			 (inheres_in q i t)))))
@@ -132,7 +132,7 @@
 // FMA
 // ****************************************
 // just for testing purposes we MIREOT in a super-minimal subset of FMA
-(is_a fma:bone material_entity)
+(is_a fma:bone bfo:material_entity)
 
 
 // ****************************************
@@ -162,8 +162,9 @@
 // test basic RO axioms
 (cl-comment "test-3" 
 	    (if (instance_of bone1 fma:bone t1)
-		(instance_of bone1 material_entity t1)))
+		(instance_of bone1 bfo:material_entity t1)))
 
+// 
 (cl-comment "test-4" 
 	    (if (and (instance_of bone1 fma:bone t1)
 		     (inheres_in bone1mass bone1 t1)
