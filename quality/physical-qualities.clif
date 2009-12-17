@@ -5,7 +5,7 @@
 (function *)
 
 (forall (a b c)
-	(if (= c (/ a b))
+	(if (qeq c (/ a b))
 	    (and (measurable_type a)
 		 (measurable_type b)
 		 (measurable_type c))))
@@ -21,30 +21,30 @@
 
 // a/b=c <=> a=b*c
 (forall (c a b)
-	(iff (= c (/ a b))
-	     (= a (* b c))))
+	(iff (qeq c (/ a b))
+	     (qeq a (* b c))))
 
 // multiplication is symmetric
 (forall (c a b)
-	(iff (= c (* a b))
-	     (= c (* b a))))
+	(iff (qeq c (* a b))
+	     (qeq c (* b a))))
 
 // e.g if rho = m/V and qa is an instance of some mass and qb is an instance of some volume, and
 // both inhere in the same bearer, then there must exist a qc that instantiates rho in the same bearer
 (forall (C A B qa qb bearer t)
-	(if (and (= C (/ A B))
+	(if (and (qeq C (/ A B))
 		 (instance_of qa A t)
 		 (instance_of qb B t)
 		 (inheres_in qa bearer t)
 		 (inheres_in qb bearer t))
 	    (exists (qc)
-		    (and (instance_of qc t)
-			 (inheres_in qc bearer)))))
+		    (and (instance_of qc C t)
+			 (inheres_in qc bearer t)))))
 
 // rho = m/V
-(= density (/ mass volume))
+(qeq density (/ mass volume))
 
-(equivalent_to 1_kg_per_m^3 (/ 1_kg 1_m^3))
+(qeq 1_kg_per_m^3 (/ 1_kg 1_m^3))
 
 //
 
@@ -71,27 +71,24 @@
 // Example of use:
 // clif-to-prover9 quality/physical-qualities.clif  -t test-1 | prover9
 
-(cl-comment "test-1" (= mass (* density volume)))
-(cl-comment "test-1" (= mass (* volume density)))
+(cl-comment "test-1" (qeq mass (* density volume)))
+(cl-comment "test-1" (qeq mass (* volume density)))
+
+(cl-comment "test-n1a" (not (qeq mass (/ volume density))))
+(cl-comment "test-n1b" (not (qeq volume (* mass density))))
 
 (cl-comment "test-2" 
 	    (if (instance_of bone1 fma:bone t1)
 		(exists (q)
 			(and (instance_of q density t1)
 			     (inheres_in q bone1 t1)))))
-(cl-comment "test-2a" 
-	    (if (instance_of bone1 fma:bone t1)
-		(exists (q)
-			(and (instance_of q density t1)
-			     (inheres_in q bone1 t1)))))
 
-
-(cl-comment "test-2b" 
-	    (if (instance_of bone1 fma:bone t1)
-		(exists (q)
-			(instance_of q density t1))))
 
 (cl-comment "test-3" 
+	    (if (instance_of bone1 fma:bone t1)
+		(instance_of bone1 material_entity t1)))
+
+(cl-comment "test-4" 
 	    (if (and (instance_of bone1 fma:bone t1)
 		     (inheres_in bone1mass bone1 t1)
 		     (inheres_in bone1volume bone1 t1)
@@ -99,12 +96,8 @@
 		     (instance_of bone1volume 1_m^3 t1)
 		     )
 		(exists (q)
-			(and (instance_of q density t1)
-			     (inheres_in q bone1 t1)
+			(and (inheres_in q bone1 t1)
 			     (instance_of q 1_kg_per_m^3 t1)))))
-			
 
-(cl-comment "test-4" 
-	    (if (instance_of bone1 fma:bone t1)
-		(instance_of bone1 material_entity t1)))
+			
 

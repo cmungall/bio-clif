@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "proving $2 in $1"
+clif-to-prover9 -t $2 $1.clif > TMP.p9 && prover9 < TMP.p9
