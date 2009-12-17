@@ -4,18 +4,19 @@
 
 // we use the predicate 'measurable_type' for want of a better name to express the union of TemporalRegion and Quality.
 // it is intended that this theory be independent of measurements, so maybe a better predicate name is in order?
+// note that in BFO universals are in the domain-of-discourse, to it's fine to have predicates that take universals as arguments.
 (forall (U)
 	(if (measurable_type U)
 	    (forall (i t)
 		    (if (instance_of i U t)
-			(or (instance_of i snap:Quality t)
-			    (instance_of i span:TemporalRegion t))))))
+			(or (instance_of i bfo:Quality t)
+			    (instance_of i bfo:TemporalRegion t))))))
 
 // ****************************************
 // PHYSICAL QUALITY AXIOMS
 // ****************************************
 
-// note - these symbols do not denote their arithmetic equivalents. the domain and range are quality universals or span:TemporalRegions
+// note - these symbols do not denote their arithmetic equivalents. the domain and range are quality universals or bfo:TemporalRegions
 // (hey, so maybe we should use a different symbol)
 (function /)
 (function *)
@@ -53,12 +54,19 @@
 // ****************************************
 // PATO / UO AXIOMS
 // ****************************************
+// mireot
+(is_a mass bfo:Quality)
+(is_a volume bfo:Quality)
+(is_a density bfo:Quality)
+
 // these are not MIREOTed in from PATO/UO, but they do extend the theory
 
 // rho = m/V
+// this should be represented in PATO somehow
 (qeq density (/ mass volume))
 
 // kg/m^3 = kg / m^3
+// this should be represented in UO somehow
 (qeq 1_kg_per_m^3 (/ 1_kg 1_m^3))
 
 // the following are perhaps BFO rather than PATO axioms.. it's all interdependent..
