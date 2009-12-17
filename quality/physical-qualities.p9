@@ -1,0 +1,27 @@
+% Automatically generated from CL/KIF
+formulas(sos).
+function("/").
+function("*").
+ all a all b all c ((qeq(c, /(a, b)) -> measurable_type(a) & measurable_type(b) & measurable_type(c))).
+ all a ((measurable_type(a) ->  all i all t ((instance_of(i, a, t) -> instance_of(i, "snap:Quality", t) | instance_of(i, "span:TemporalRegion", t))))).
+ all c all a all b ((qeq(c, /(a, b)) <-> qeq(a, *(b, c)))).
+ all c all a all b ((qeq(c, *(a, b)) <-> qeq(c, *(b, a)))).
+ all c all a all b all qa all qb all bearer all t ((qeq(c, /(a, b)) & instance_of(qa, a, t) & instance_of(qb, b, t) & inheres_in(qa, bearer, t) & inheres_in(qb, bearer, t) ->  exists qc (instance_of(qc, c, t) & inheres_in(qc, bearer, t)))).
+qeq("density", /("mass", "volume")).
+qeq("1_kg_per_m^3", /("1_kg", "1_m^3")).
+ all i all t ((instance_of(i, "fma:bone", t) -> instance_of(i, "material_entity", t))).
+ all i all t ((instance_of(i, "material_entity", t) ->  exists q (instance_of(q, "mass", t) & inheres_in(q, i, t)))).
+ all i all t ((instance_of(i, "material_entity", t) ->  exists q (instance_of(q, "volume", t) & inheres_in(q, i, t)))).
+
+end_of_list.
+% Automatically generated from CL/KIF
+formulas(goals).
+qeq("mass", *("density", "volume")).
+qeq("mass", *("volume", "density")).
+-(qeq("mass", /("volume", "density"))).
+-(qeq("volume", *("mass", "density"))).
+(instance_of("bone1", "fma:bone", "t1") ->  exists q (instance_of(q, "density", "t1") & inheres_in(q, "bone1", "t1"))).
+(instance_of("bone1", "fma:bone", "t1") -> instance_of("bone1", "material_entity", "t1")).
+(instance_of("bone1", "fma:bone", "t1") & inheres_in("bone1mass", "bone1", "t1") & inheres_in("bone1volume", "bone1", "t1") & instance_of("bone1mass", "1_kg", "t1") & instance_of("bone1volume", "1_m^3", "t1") ->  exists q (inheres_in(q, "bone1", "t1") & instance_of(q, "1_kg_per_m^3", "t1"))).
+
+end_of_list.
