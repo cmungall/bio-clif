@@ -51,6 +51,12 @@
 		    (and (instance_of qc C t)
 			 (inheres_in qc bearer t)))))
 
+// units are just special kinds of subtypes;
+// e.g. 1_kg is a subtype of mass instantiated by all 1_kg-bearing entities in the universe at t
+(forall (u q)
+	(if (unit_of u q)
+	    (is_a u q)))
+
 // ****************************************
 // PATO / UO AXIOMS
 // ****************************************
@@ -58,6 +64,10 @@
 (is_a mass bfo:Quality)
 (is_a volume bfo:Quality)
 (is_a density bfo:Quality)
+
+(unit_of 1_kg mass)
+(unit_of 1_m^3 volume)
+(unit_of 1_kg_per_m^3 density)
 
 // these are not MIREOTed in from PATO/UO, but they do extend the theory
 
