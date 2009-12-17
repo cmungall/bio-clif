@@ -23,7 +23,7 @@
 
 // domain and range are measurable
 (forall (a b c)
-	(if (qeq c (/ a b))
+	(if (= c (/ a b))
 	    (and (measurable_type a)
 		 (measurable_type b)
 		 (measurable_type c))))
@@ -31,18 +31,18 @@
 
 // a/b=c <=> a=b*c
 (forall (c a b)
-	(iff (qeq c (/ a b))
-	     (qeq a (* b c))))
+	(iff (= c (/ a b))
+	     (= a (* b c))))
 
 // multiplication is symmetric
 (forall (c a b)
-	(iff (qeq c (* a b))
-	     (qeq c (* b a))))
+	(iff (= c (* a b))
+	     (= c (* b a))))
 
 // e.g if rho = m/V and qa is an instance of some mass and qb is an instance of some volume, and
 // both inhere in the same bearer, then there must exist a qc that instantiates rho in the same bearer
 (forall (C A B qa qb bearer t)
-	(if (and (qeq C (/ A B))
+	(if (and (= C (/ A B))
 		 (instance_of qa A t)
 		 (instance_of qb B t)
 		 (inheres_in qa bearer t)
@@ -57,6 +57,15 @@
 	(if (unit_of u q)
 	    (is_a u q)))
 
+// e.g. if mass is a deteminable then any bearer can only have 1 mass at any time
+(forall (Q)
+	(if (determinable Q)
+	    (forall (q e t)
+		    (if (inheres_in q e t)
+			(not (exists (q2)
+				     (and (inheres_in q2 e t)
+					  (not (= q q2)))))))))
+
 // ****************************************
 // PATO / UO AXIOMS
 // ****************************************
@@ -64,6 +73,10 @@
 (is_a mass bfo:Quality)
 (is_a volume bfo:Quality)
 (is_a density bfo:Quality)
+
+(determinable mass)
+(determinable volume)
+(determinable density)
 
 (unit_of 1_kg mass)
 (unit_of 1_m^3 volume)
@@ -73,13 +86,18 @@
 
 // rho = m/V
 // this should be represented in PATO somehow
-(qeq density (/ mass volume))
+(= density (/ mass volume))
 
 // kg/m^3 = kg / m^3
-// this should be represented in UO somehow
-(qeq 1_kg_per_m^3 (/ 1_kg 1_m^3))
+// this should be represented in UO somehow.
+// note that whilst the *label* "1_kg" is a human-created artefact we take the position that the
+// subtype of mass (that happens to be called "1_kg" and happens to be defined as blah blah water meter)
+// exists independenly of humans and human measurements, and the equivalence predicate below expresses
+// something about that mind-independent universe
+(= 1_kg_per_m^3 (/ 1_kg 1_m^3))
 
-// the following are perhaps BFO rather than PATO axioms.. it's all interdependent..
+// the following are perhaps BFO rather than PATO axioms..
+// .. but they refer to pato qualities so we put em here... it's all interdependent..
 
 // every material entity has mass
 (forall (i t)
@@ -123,13 +141,14 @@
 // cltools clif-to-p9 translator treats these as goals to be proved:
 // Example of use:
 // clif-to-prover9 quality/physical-qualities.clif  -t test-1 | prover9
+// also see the corresponding .p9 files
 
-// very basic dimensional analysis
-(cl-comment "test-1" (qeq mass (* density volume)))
-(cl-comment "test-1" (qeq mass (* volume density)))
+// very basic dimensional analysis test
+(cl-comment "test-1" (= mass (* density volume)))
+(cl-comment "test-1" (= mass (* volume density)))
 
-(cl-comment "test-n1a" (not (qeq mass (/ volume density))))
-(cl-comment "test-n1b" (not (qeq volume (* mass density))))
+(cl-comment "test-n1a" (not (= mass (/ volume density))))
+(cl-comment "test-n1b" (not (= volume (* mass density))))
 
 // check that all bones have density
 // (follows from [a] all bones have mass and volume and [b]
@@ -140,7 +159,7 @@
 			(and (instance_of q density t1)
 			     (inheres_in q bone1 t1)))))
 
-// test basic is_a etc
+// test basic RO axioms
 (cl-comment "test-3" 
 	    (if (instance_of bone1 fma:bone t1)
 		(instance_of bone1 material_entity t1)))
