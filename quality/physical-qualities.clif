@@ -1,0 +1,110 @@
+
+
+// note - these symbols do not denote their arithmetic equivalents. the domain and range are quality universals or span:TemporalRegions
+(function /)
+(function *)
+
+(forall (a b c)
+	(if (= c (/ a b))
+	    (and (measurable_type a)
+		 (measurable_type b)
+		 (measurable_type c))))
+
+// we use the predicate 'measurable_type' for want of a better name to express the union of TemporalRegion and Quality.
+// it is intended that this theory be independent of measurements
+(forall (a)
+	(if (measurable_type a)
+	    (forall (i t)
+		    (if (instance_of i a t)
+			(or (instance_of i snap:Quality t)
+			    (instance_of i span:TemporalRegion t))))))
+
+// a/b=c <=> a=b*c
+(forall (c a b)
+	(iff (= c (/ a b))
+	     (= a (* b c))))
+
+// multiplication is symmetric
+(forall (c a b)
+	(iff (= c (* a b))
+	     (= c (* b a))))
+
+// e.g if rho = m/V and qa is an instance of some mass and qb is an instance of some volume, and
+// both inhere in the same bearer, then there must exist a qc that instantiates rho in the same bearer
+(forall (C A B qa qb bearer t)
+	(if (and (= C (/ A B))
+		 (instance_of qa A t)
+		 (instance_of qb B t)
+		 (inheres_in qa bearer t)
+		 (inheres_in qb bearer t))
+	    (exists (qc)
+		    (and (instance_of qc t)
+			 (inheres_in qc bearer)))))
+
+// rho = m/V
+(= density (/ mass volume))
+
+(equivalent_to 1_kg_per_m^3 (/ 1_kg 1_m^3))
+
+//
+
+(forall (i t) 
+	(if (instance_of i fma:bone t)
+	    (instance_of i material_entity t)))
+
+// every material entity has mass
+(forall (i t)
+	(if (instance_of i material_entity t)
+	    (exists (q)
+		    (and (instance_of q mass t)
+			 (inheres_in q i t)))))
+
+// every material entity has volume
+(forall (i t)
+	(if (instance_of i material_entity t)
+	    (exists (q)
+		    (and (instance_of q volume t)
+			 (inheres_in q i t)))))
+
+// TESTS
+// cltools clif-to-p9 translator treats these as goals to be proved:
+// Example of use:
+// clif-to-prover9 quality/physical-qualities.clif  -t test-1 | prover9
+
+(cl-comment "test-1" (= mass (* density volume)))
+(cl-comment "test-1" (= mass (* volume density)))
+
+(cl-comment "test-2" 
+	    (if (instance_of bone1 fma:bone t1)
+		(exists (q)
+			(and (instance_of q density t1)
+			     (inheres_in q bone1 t1)))))
+(cl-comment "test-2a" 
+	    (if (instance_of bone1 fma:bone t1)
+		(exists (q)
+			(and (instance_of q density t1)
+			     (inheres_in q bone1 t1)))))
+
+
+(cl-comment "test-2b" 
+	    (if (instance_of bone1 fma:bone t1)
+		(exists (q)
+			(instance_of q density t1))))
+
+(cl-comment "test-3" 
+	    (if (and (instance_of bone1 fma:bone t1)
+		     (inheres_in bone1mass bone1 t1)
+		     (inheres_in bone1volume bone1 t1)
+		     (instance_of bone1mass 1_kg t1)
+		     (instance_of bone1volume 1_m^3 t1)
+		     )
+		(exists (q)
+			(and (instance_of q density t1)
+			     (inheres_in q bone1 t1)
+			     (instance_of q 1_kg_per_m^3 t1)))))
+			
+
+(cl-comment "test-4" 
+	    (if (instance_of bone1 fma:bone t1)
+		(instance_of bone1 material_entity t1)))
+
