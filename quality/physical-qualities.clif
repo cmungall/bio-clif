@@ -1,23 +1,32 @@
+// ****************************************
+// BFO AXIOMS
+// ****************************************
 
+// we use the predicate 'measurable_type' for want of a better name to express the union of TemporalRegion and Quality.
+// it is intended that this theory be independent of measurements, so maybe a better predicate name is in order?
+(forall (U)
+	(if (measurable_type U)
+	    (forall (i t)
+		    (if (instance_of i U t)
+			(or (instance_of i snap:Quality t)
+			    (instance_of i span:TemporalRegion t))))))
+
+// ****************************************
+// PHYSICAL QUALITY AXIOMS
+// ****************************************
 
 // note - these symbols do not denote their arithmetic equivalents. the domain and range are quality universals or span:TemporalRegions
+// (hey, so maybe we should use a different symbol)
 (function /)
 (function *)
 
+// domain and range are measurable
 (forall (a b c)
 	(if (qeq c (/ a b))
 	    (and (measurable_type a)
 		 (measurable_type b)
 		 (measurable_type c))))
 
-// we use the predicate 'measurable_type' for want of a better name to express the union of TemporalRegion and Quality.
-// it is intended that this theory be independent of measurements
-(forall (a)
-	(if (measurable_type a)
-	    (forall (i t)
-		    (if (instance_of i a t)
-			(or (instance_of i snap:Quality t)
-			    (instance_of i span:TemporalRegion t))))))
 
 // a/b=c <=> a=b*c
 (forall (c a b)
@@ -41,16 +50,18 @@
 		    (and (instance_of qc C t)
 			 (inheres_in qc bearer t)))))
 
+// ****************************************
+// PATO / UO AXIOMS
+// ****************************************
+// these are not MIREOTed in from PATO/UO, but they do extend the theory
+
 // rho = m/V
 (qeq density (/ mass volume))
 
+// kg/m^3 = kg / m^3
 (qeq 1_kg_per_m^3 (/ 1_kg 1_m^3))
 
-//
-
-(forall (i t) 
-	(if (instance_of i fma:bone t)
-	    (instance_of i material_entity t)))
+// the following are perhaps BFO rather than PATO axioms.. it's all interdependent..
 
 // every material entity has mass
 (forall (i t)
@@ -66,24 +77,52 @@
 		    (and (instance_of q volume t)
 			 (inheres_in q i t)))))
 
+// ****************************************
+// BASIC RO AXIOMS
+// ****************************************
+// these would be imported but we MIREOT some in here, just enough to prove what we need
+
+(forall (X Y Z)
+	(if (and (is_a X Y)
+		 (is_a Y Z))
+	    (is_a X Z)))
+
+(forall (i X Y t)
+	(if (and (instance_of i X t)
+		 (is_a X Y))
+	    (instance_of i Y t)))
+
+// ****************************************
+// FMA
+// ****************************************
+// just for testing purposes we MIREOT in a super-minimal subset of FMA
+(is_a fma:bone material_entity)
+
+
+// ****************************************
 // TESTS
+// ****************************************
 // cltools clif-to-p9 translator treats these as goals to be proved:
 // Example of use:
 // clif-to-prover9 quality/physical-qualities.clif  -t test-1 | prover9
 
+// very basic dimensional analysis
 (cl-comment "test-1" (qeq mass (* density volume)))
 (cl-comment "test-1" (qeq mass (* volume density)))
 
 (cl-comment "test-n1a" (not (qeq mass (/ volume density))))
 (cl-comment "test-n1b" (not (qeq volume (* mass density))))
 
+// check that all bones have density
+// (follows from [a] all bones have mass and volume and [b]
+//  if something has mass and volume then it has density)
 (cl-comment "test-2" 
 	    (if (instance_of bone1 fma:bone t1)
 		(exists (q)
 			(and (instance_of q density t1)
 			     (inheres_in q bone1 t1)))))
 
-
+// test basic is_a etc
 (cl-comment "test-3" 
 	    (if (instance_of bone1 fma:bone t1)
 		(instance_of bone1 material_entity t1)))
