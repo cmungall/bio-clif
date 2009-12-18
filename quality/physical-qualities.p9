@@ -1,27 +1,43 @@
 % Automatically generated from CL/KIF
 formulas(sos).
+ all u ((measurable_type(u) ->  all i all t ((instance_of(i, u, t) -> instance_of(i, "bfo:Quality", t) | instance_of(i, "bfo:TemporalRegion", t))))).
+ all w all x all y all t ((object_divided_into(w, x, y, t) <-> part_of(x, w, t) & part_of(y, w, t) & -(overlaps(x, y, t)) & -( exists z (part_of(z, w, t) & -(overlaps(z, x, t) | overlaps(z, y, t)))))).
 function("/").
 function("*").
- all a all b all c ((qeq(c, /(a, b)) -> measurable_type(a) & measurable_type(b) & measurable_type(c))).
- all a ((measurable_type(a) ->  all i all t ((instance_of(i, a, t) -> instance_of(i, "snap:Quality", t) | instance_of(i, "span:TemporalRegion", t))))).
- all c all a all b ((qeq(c, /(a, b)) <-> qeq(a, *(b, c)))).
- all c all a all b ((qeq(c, *(a, b)) <-> qeq(c, *(b, a)))).
- all c all a all b all qa all qb all bearer all t ((qeq(c, /(a, b)) & instance_of(qa, a, t) & instance_of(qb, b, t) & inheres_in(qa, bearer, t) & inheres_in(qb, bearer, t) ->  exists qc (instance_of(qc, c, t) & inheres_in(qc, bearer, t)))).
-qeq("density", /("mass", "volume")).
-qeq("1_kg_per_m^3", /("1_kg", "1_m^3")).
- all i all t ((instance_of(i, "fma:bone", t) -> instance_of(i, "material_entity", t))).
- all i all t ((instance_of(i, "material_entity", t) ->  exists q (instance_of(q, "mass", t) & inheres_in(q, i, t)))).
- all i all t ((instance_of(i, "material_entity", t) ->  exists q (instance_of(q, "volume", t) & inheres_in(q, i, t)))).
+ all a all b all c (((c = /(a, b)) -> measurable_type(a) & measurable_type(b) & measurable_type(c))).
+ all c all a all b (((c = /(a, b)) <-> (a = *(b, c)))).
+ all c all a all b (((c = *(a, b)) <-> (c = *(b, a)))).
+ all c all a all b all qa all qb all bearer all t (((c = /(a, b)) & instance_of(qa, a, t) & instance_of(qb, b, t) & inheres_in(qa, bearer, t) & inheres_in(qb, bearer, t) ->  exists qc (instance_of(qc, c, t) & inheres_in(qc, bearer, t)))).
+ all u all q ((unit_of(u, q) -> is_a(u, q))).
+ all q ((determinable(q) ->  all q all e all t ((inheres_in(q, e, t) -> -( exists q2 (inheres_in(q2, e, t) & -((q = q2)))))))).
+ all w all x all y all t ((object_divided_into(w, x, y, t) ->  exists wm exists xm exists ym (inheres_in(wm, w, t) & inheres_in(xm, x, t) & inheres_in(ym, y, t) & instance_of(wm, "pato:mass", t) & instance_of(xm, "pato:mass", t) & instance_of(ym, "pato:mass", t) & (wm = +(xm, ym))))).
+is_a("pato:mass", "bfo:Quality").
+is_a("pato:volume", "bfo:Quality").
+is_a("pato:density", "bfo:Quality").
+determinable("pato:mass").
+determinable("pato:volume").
+determinable("pato:density").
+unit_of("1_kg", "pato:mass").
+unit_of("1_m^3", "pato:volume").
+unit_of("1_kg_per_m^3", "pato:density").
+instance_of("bipm_kilogram_standard", "1_kg", "today").
+("pato:density" = /("pato:mass", "pato:volume")).
+("1_kg_per_m^3" = /("1_kg", "1_m^3")).
+ all i all t ((instance_of(i, "bfo:material_entity", t) ->  exists q (instance_of(q, "pato:mass", t) & inheres_in(q, i, t)))).
+ all i all t ((instance_of(i, "bfo:material_entity", t) ->  exists q (instance_of(q, "pato:volume", t) & inheres_in(q, i, t)))).
+ all x all y all z ((is_a(x, y) & is_a(y, z) -> is_a(x, z))).
+ all i all x all y all t ((instance_of(i, x, t) & is_a(x, y) -> instance_of(i, y, t))).
+is_a("fma:bone", "bfo:material_entity").
 
 end_of_list.
 % Automatically generated from CL/KIF
 formulas(goals).
-qeq("mass", *("density", "volume")).
-qeq("mass", *("volume", "density")).
--(qeq("mass", /("volume", "density"))).
--(qeq("volume", *("mass", "density"))).
-(instance_of("bone1", "fma:bone", "t1") ->  exists q (instance_of(q, "density", "t1") & inheres_in(q, "bone1", "t1"))).
-(instance_of("bone1", "fma:bone", "t1") -> instance_of("bone1", "material_entity", "t1")).
+("pato:mass" = *("pato:density", "pato:volume")).
+("pato:mass" = *("pato:volume", "pato:density")).
+-(("pato:mass" = /("pato:volume", "pato:density"))).
+-(("pato:volume" = *("pato:mass", "pato:density"))).
+(instance_of("bone1", "fma:bone", "t1") ->  exists q (instance_of(q, "pato:density", "t1") & inheres_in(q, "bone1", "t1"))).
+(instance_of("bone1", "fma:bone", "t1") -> instance_of("bone1", "bfo:material_entity", "t1")).
 (instance_of("bone1", "fma:bone", "t1") & inheres_in("bone1mass", "bone1", "t1") & inheres_in("bone1volume", "bone1", "t1") & instance_of("bone1mass", "1_kg", "t1") & instance_of("bone1volume", "1_m^3", "t1") ->  exists q (inheres_in(q, "bone1", "t1") & instance_of(q, "1_kg_per_m^3", "t1"))).
 
 end_of_list.
