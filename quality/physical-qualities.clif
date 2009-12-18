@@ -1,6 +1,7 @@
 // the basic idea here is to show we can do some v basic axiomatization of units that is
 // [1] compatible with BFO's theory of qualities
-// [2] allows us to represent standard mind-independent physical relationships without recourse to measurements
+// [2] allows us to represent standard mind-independent physical relationships without recourse to measurements;
+//     e.g. 1_kg_per_m^3  = 1_kg / 1_m^3
 
 // ****************************************
 // BFO AXIOMS
@@ -15,6 +16,18 @@
 		    (if (instance_of i U t)
 			(or (instance_of i bfo:Quality t)
 			    (instance_of i bfo:TemporalRegion t))))))
+
+// objects, processes, etc be divided in two non-overlappings parts leaving no remainder.
+(forall (w x y t)
+        (iff (object_divided_into w x y t)
+	     (and (part_of x w t)
+                  (part_of y w t)
+                  (not (overlaps x y t))
+                  (not (exists (z)
+                               (and (part_of z w t)
+                                    (not (or (overlaps z x t)
+                                             (overlaps z y t)))))))))
+
 
 // ****************************************
 // PHYSICAL QUALITY AXIOMS
@@ -56,7 +69,9 @@
 			 (inheres_in qc bearer t)))))
 
 // units are just special kinds of subtypes;
-// e.g. 1_kg is a subtype of pato:mass instantiated by all 1_kg-bearing entities in the universe at t
+// e.g. 1_kg is a subtype of pato:mass instantiated by all 1_kg-bearing entities in the universe at t.
+// note we do not need to declare 2_kg, 2.3001_kg etc as we can refer to these subtypes of mass using
+// expressions such as (* 1_kg 2) -- these expressions are analagous to traditional physical quantities.
 (forall (u q)
 	(if (unit_of u q)
 	    (is_a u q)))
@@ -70,7 +85,20 @@
 				     (and (inheres_in q2 e t)
 					  (not (= q q2)))))))))
 
-(= m (* 100 cm))
+// Axiom: mass is additive
+(forall (w x y t)
+        (if (object_divided_into w x y t)
+            (exists (wm xm ym)
+		    (and (inheres_in wm w t)
+			 (inheres_in xm x t)
+			 (inheres_in ym y t)
+			 (instance_of wm pato:mass t)
+			 (instance_of xm pato:mass t)
+			 (instance_of ym pato:mass t)
+			 (= wm (+ xm ym))))))
+
+
+//(= m (* 100 cm))
 // TODO:
 // to represent m = 100 cm we can have some kind macro or semi
 // higher order theorem that turns the above into:
@@ -98,9 +126,13 @@
 (determinable pato:volume)
 (determinable pato:density)
 
+// remember, unit_of is just a special kind of subtyping
 (unit_of 1_kg pato:mass)
 (unit_of 1_m^3 pato:volume)
 (unit_of 1_kg_per_m^3 pato:density)
+
+// pointless but just for illustration:
+(instance_of bipm_kilogram_standard 1_kg today)
 
 // these are not MIREOTed in from PATO/UO, but they do extend the theory
 
@@ -113,7 +145,7 @@
 // note that whilst the *label* "1_kg" is a human-created artefact we take the position that the
 // subtype of pato:mass (that happens to be called "1_kg" and happens to be defined as blah blah water meter)
 // exists independenly of humans and human measurements, and the equivalence predicate below expresses
-// something about that mind-independent universe
+// something about that mind-independent universe.
 (= 1_kg_per_m^3 (/ 1_kg 1_m^3))
 
 // the following are perhaps BFO rather than PATO axioms..
@@ -204,6 +236,3 @@
 		(exists (q)
 			(and (inheres_in q bone1 t1)
 			     (instance_of q 1_kg_per_m^3 t1)))))
-
-			
-
